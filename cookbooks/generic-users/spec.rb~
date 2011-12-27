@@ -1,0 +1,10 @@
+require './libraries/user.rb'
+
+describe GenericUsers::User do
+  describe "#initialize" do
+    it "sets data_bag attribute" do
+      u = GenericUsers::User.new({ "id" => "test", "foo" => "bar", "baz" => "quux" })
+      u
+    end
+  end
+end

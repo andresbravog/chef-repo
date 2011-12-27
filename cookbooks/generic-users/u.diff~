@@ -1,0 +1,44 @@
+diff --git a/cookbooks/generic-users/libraries/user.rb b/cookbooks/generic-users/libraries/user.rb
+index bd5ebf3..4a9bdf0 100644
+--- a/cookbooks/generic-users/libraries/user.rb
++++ b/cookbooks/generic-users/libraries/user.rb
+@@ -89,7 +89,7 @@ class GenericUsers
+ 
+     # Pretty-print without too much screen noise
+     def inspect
+-      self.to_s.sub('>', " #{self.item_id}>")
++      self.to_s.sub('>', " #{data[:id]}>")
+     end
+ 
+     # All of user's groups
+@@ -126,14 +126,25 @@ class GenericUsers
+ 
+   class << self
+     include Chef::Mixin::Language
++
++    # Get group
++    # 
++    # @param [String] group_id Name of group
++    # @return [Mash] Mash containing group attributes; if
++    # specified group does not exist, a Mash containing group id and
++    # +:imaginary => true+ entry.
+     def get_group(group_id)
+       @@db_groups ||= data_bag('groups')
+       @@groups ||= {}
+-      @@groups[group_id] ||= if @@db_groups.include?(group_id)
+-                             then data_bag_item("groups", group_id)
+-                             else Mash::new(:id => group_id,
+-                                            :imaginary => true)
+-                             end
++      @@groups[group_id] ||= Mash::new(
++        if @@db_groups.include?(group_id)
++        then data_bag_item("groups", group_id).to_hash
++        else {
++            :id => group_id,
++            :imaginary => true
++          }
++        end
++        )
+     end
+   end
+ end
